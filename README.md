@@ -352,6 +352,82 @@ func `p95 threshold`() {
 
 ## Best Practices
 
+### Benchmark Fixtures and Timed Regions
+
+For I/O, filesystem, and executor benchmarks, setup and teardown must run **outside** the timed measurement region. Otherwise, file creation, network connections, or executor startup inflate performance numbers.
+
+**Problem**: Setup inside timed region measures the wrong thing:
+
+```swift
+// ❌ BAD - file creation is measured
+@Suite(.serialized)
+struct `File Streaming` {
+    @Test(.timed(iterations: 5))
+    func stream1MBFile() async throws {
+        // This setup is TIMED - inflates results!
+        let data = [UInt8](repeating: 0xAB, count: 1_000_000)
+        try data.write(to: filePath)
+
+        defer { try? FileManager.default.removeItem(at: filePath) }
+
+        // Actual operation
+        for chunk in streamFile(filePath) { }
+    }
+}
+```
+
+**Solution**: Use `final class` suites with `init`/`deinit`:
+
+```swift
+// ✅ GOOD - setup/teardown outside timed region
+@Suite(.serialized)
+final class `File Streaming` {
+    let executor: IOExecutor
+    let file1MB: URL
+
+    init() async throws {
+        // Setup runs ONCE, before any tests
+        self.executor = IOExecutor()
+        self.file1MB = tempDir.appending("stream.bin")
+
+        let data = [UInt8](repeating: 0xAB, count: 1_000_000)
+        try data.write(to: file1MB)
+    }
+
+    deinit {
+        // Cleanup runs after all tests - synchronous!
+        try? FileManager.default.removeItem(at: file1MB)
+    }
+
+    @Test(.timed(iterations: 5))
+    func stream1MBFile() async throws {
+        // Only this code is measured
+        for chunk in streamFile(file1MB) { }
+    }
+}
+```
+
+**Key points**:
+
+1. **Use `final class`** not `struct` - enables `deinit` for cleanup
+2. **Setup in `init()`** - files, directories, executors created once
+3. **Cleanup in `deinit`** - runs synchronously after all tests
+4. **Use `.serialized`** - prevents I/O contention between tests
+5. **Avoid `defer { Task { ... } }`** - async cleanup can overlap with next test
+
+**Executor startup exception**: If measuring "first job latency including startup", intentionally create the executor inside the timed test:
+
+```swift
+@Test(.timed(iterations: 10))
+func executorStartupLatency() async throws {
+    // Intentionally timed - measures startup cost
+    let executor = IOExecutor()
+    defer { Task { await executor.shutdown() } }
+
+    _ = try await executor.run { 42 }
+}
+```
+
 ### 1. Separate Correctness from Performance
 
 ```swift
