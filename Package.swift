@@ -18,15 +18,18 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-numerics.git", from: "1.0.0"),
-        .package(url: "https://github.com/coenttb/swift-memory-allocation.git", from: "0.2.0")
+        .package(url: "https://github.com/apple/swift-numerics.git", from: "1.0.0")
     ],
     targets: [
+        .target(
+            name: "MemoryAllocation",
+            path: "Sources/MemoryAllocation"
+        ),
         .target(
             name: "TestingPerformance",
             dependencies: [
                 .product(name: "Numerics", package: "swift-numerics"),
-                .product(name: "MemoryAllocation", package: "swift-memory-allocation")
+                .target(name: "MemoryAllocation")
             ]
         ),
         .testTarget(
