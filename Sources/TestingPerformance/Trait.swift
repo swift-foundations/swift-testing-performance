@@ -23,10 +23,31 @@
                 testCase: Test.Case?,
                 performing function: @Sendable () async throws -> Void
             ) async throws {
-                // Merge configurations (parent + current)
-                let effectiveConfig =
-                    Self.currentConfig?.merged(with: configuration) ?? configuration
-                // Use the most recent source location (innermost trait wins)
+                // An enclosing performance trait is already measuring this test:
+                // this trait's configuration was folded into the effective
+                // configuration by the outermost trait, so pass straight through —
+                // never start a second, nested measurement loop.
+                if Self.currentConfig != nil {
+                    try await function()
+                    return
+                }
+
+                // Outermost performance trait: fold every performance trait
+                // attached to the test (suite-inherited first, test-level last,
+                // so inner explicitly-set values win) into one configuration,
+                // then run the single measurement loop.
+                let attachedConfigurations = test.traits.compactMap {
+                    ($0 as? _PerformanceTrait)?.configuration
+                }
+                let effectiveConfig: TestingPerformance.Configuration
+                if let first = attachedConfigurations.first {
+                    effectiveConfig = attachedConfigurations.dropFirst()
+                        .reduce(first) { $0.merged(with: $1) }
+                } else {
+                    // Scope provided outside trait discovery (e.g. direct
+                    // invocation): only this trait's configuration is known.
+                    effectiveConfig = configuration
+                }
                 let effectiveSourceLocation = sourceLocation
 
                 try await Self.$currentConfig.withValue(effectiveConfig) {
@@ -34,7 +55,7 @@
                         // Run test with performance measurement
                         try await measureTest(
                             name: test.name,
-                            config: effectiveConfig,
+                            config: effectiveConfig.resolved,
                             sourceLocation: effectiveSourceLocation,
                             performing: function
                         )
@@ -44,7 +65,7 @@
 
             private func measureTest(
                 name: String,
-                config: TestingPerformance.Configuration,
+                config: TestingPerformance.Configuration.Resolved,
                 sourceLocation: SourceLocation,
                 performing function: @Sendable () async throws -> Void
             ) async throws {
@@ -129,7 +150,7 @@
 
             private func reportAndValidateResults(
                 name: String,
-                config: TestingPerformance.Configuration,
+                config: TestingPerformance.Configuration.Resolved,
                 context: ValidationContext,
                 sourceLocation: SourceLocation
             ) {
@@ -179,7 +200,7 @@
 
             private func validatePerformanceThreshold(
                 name: String,
-                config: TestingPerformance.Configuration,
+                config: TestingPerformance.Configuration.Resolved,
                 measurement: TestingPerformance.Measurement,
                 sourceLocation: SourceLocation
             ) {
@@ -202,7 +223,7 @@
 
             private func validateAllocationLimit(
                 name: String,
-                config: TestingPerformance.Configuration,
+                config: TestingPerformance.Configuration.Resolved,
                 allocationDeltas: [Int],
                 sourceLocation: SourceLocation
             ) {
@@ -262,7 +283,7 @@
 
             private func validatePeakMemoryLimit(
                 name: String,
-                config: TestingPerformance.Configuration,
+                config: TestingPerformance.Configuration.Resolved,
                 tracker: MemoryAllocation.PeakMemoryTracker?,
                 sourceLocation: SourceLocation
             ) {
@@ -300,28 +321,32 @@
         }
 
         extension TestingPerformance {
+            /// Partial trait configuration: every field is optional so that a
+            /// trait only carries the values it explicitly set. Merging never
+            /// lets one trait's *defaults* clobber another trait's explicit
+            /// values — unset fields fall back at resolution time instead.
             struct Configuration: Sendable {
-                var enabled: Bool
-                var iterations: Int
-                var warmup: Int
-                var printResults: Bool
+                var enabled: Bool?
+                var iterations: Int?
+                var warmup: Int?
+                var printResults: Bool?
                 var threshold: Duration?
-                var metric: Metric
-                var trackAllocations: Bool
+                var metric: Metric?
+                var trackAllocations: Bool?
                 var maxAllocations: Int?
-                var detectLeaks: Bool
+                var detectLeaks: Bool?
                 var peakMemoryLimit: Int?
 
                 init(
-                    enabled: Bool = true,
-                    iterations: Int = 10,
-                    warmup: Int = 0,
-                    printResults: Bool = false,
+                    enabled: Bool? = nil,
+                    iterations: Int? = nil,
+                    warmup: Int? = nil,
+                    printResults: Bool? = nil,
                     threshold: Duration? = nil,
-                    metric: Metric = .median,
-                    trackAllocations: Bool = true,
+                    metric: Metric? = nil,
+                    trackAllocations: Bool? = nil,
                     maxAllocations: Int? = nil,
-                    detectLeaks: Bool = false,
+                    detectLeaks: Bool? = nil,
                     peakMemoryLimit: Int? = nil
                 ) {
                     self.enabled = enabled
@@ -336,18 +361,49 @@
                     self.peakMemoryLimit = peakMemoryLimit
                 }
 
+                /// Explicitly-set values in `other` win; unset values keep `self`'s.
                 func merged(with other: Configuration) -> Configuration {
                     Configuration(
-                        enabled: other.enabled,
-                        iterations: other.iterations,
-                        warmup: other.warmup,
-                        printResults: other.printResults,
+                        enabled: other.enabled ?? self.enabled,
+                        iterations: other.iterations ?? self.iterations,
+                        warmup: other.warmup ?? self.warmup,
+                        printResults: other.printResults ?? self.printResults,
                         threshold: other.threshold ?? self.threshold,
-                        metric: other.metric,
-                        trackAllocations: other.trackAllocations,
+                        metric: other.metric ?? self.metric,
+                        trackAllocations: other.trackAllocations ?? self.trackAllocations,
                         maxAllocations: other.maxAllocations ?? self.maxAllocations,
-                        detectLeaks: other.detectLeaks,
+                        detectLeaks: other.detectLeaks ?? self.detectLeaks,
                         peakMemoryLimit: other.peakMemoryLimit ?? self.peakMemoryLimit
+                    )
+                }
+
+                /// Fully-resolved configuration with defaults applied to every
+                /// field a trait left unset.
+                struct Resolved: Sendable {
+                    var enabled: Bool
+                    var iterations: Int
+                    var warmup: Int
+                    var printResults: Bool
+                    var threshold: Duration?
+                    var metric: Metric
+                    var trackAllocations: Bool
+                    var maxAllocations: Int?
+                    var detectLeaks: Bool
+                    var peakMemoryLimit: Int?
+                }
+
+                var resolved: Resolved {
+                    Resolved(
+                        enabled: enabled ?? true,
+                        iterations: iterations ?? 10,
+                        warmup: warmup ?? 0,
+                        printResults: printResults ?? false,
+                        threshold: threshold,
+                        metric: metric ?? .median,
+                        trackAllocations: trackAllocations ?? true,
+                        maxAllocations: maxAllocations,
+                        detectLeaks: detectLeaks ?? false,
+                        peakMemoryLimit: peakMemoryLimit
                     )
                 }
             }
