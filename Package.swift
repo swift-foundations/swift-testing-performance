@@ -23,7 +23,17 @@ let package = Package(
     targets: [
         .target(
             name: "MemoryAllocation",
+            dependencies: [
+                .target(name: "CAllocationTracking", condition: .when(platforms: [.linux]))
+            ],
             path: "Sources/MemoryAllocation"
+        ),
+        .target(
+            name: "CAllocationTracking",
+            path: "Sources/CAllocationTracking",
+            linkerSettings: [
+                .linkedLibrary("dl", .when(platforms: [.linux]))
+            ]
         ),
         .target(
             name: "TestingPerformance",
