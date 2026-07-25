@@ -33,6 +33,17 @@ dependencies: [
 ]
 ```
 
+Add the product to your test target:
+
+```swift
+.testTarget(
+    name: "YourTests",
+    dependencies: [
+        .product(name: "TestingPerformance", package: "swift-testing-performance")
+    ]
+)
+```
+
 ### Requirements
 
 - Swift 6.0+
