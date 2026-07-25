@@ -16,12 +16,12 @@ permissions:
 jobs:
   validate:
     name: Validate Release
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.0.app
+        run: sudo xcode-select -s /Applications/Xcode_26.6.app
 
       - name: Validate tag format
         run: |
@@ -57,12 +57,12 @@ jobs:
   create-release-artifacts:
     name: Create Release Artifacts
     needs: validate
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.0.app
+        run: sudo xcode-select -s /Applications/Xcode_26.6.app
 
       - name: Generate documentation archive
         run: |
@@ -81,7 +81,7 @@ jobs:
 
       - name: Upload documentation to release
         if: github.event_name == 'release'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3.0.2
         with:
           files: documentation.zip
         env:
@@ -90,7 +90,7 @@ jobs:
   publish-documentation:
     name: Publish Documentation
     needs: validate
-    runs-on: macos-15
+    runs-on: macos-26
     if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
@@ -100,10 +100,10 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.0.app
+        run: sudo xcode-select -s /Applications/Xcode_26.6.app
 
       - name: Build documentation
         run: |
@@ -133,13 +133,13 @@ jobs:
           EOF
 
       - name: Setup Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: ./docs
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
