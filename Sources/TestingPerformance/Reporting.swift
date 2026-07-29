@@ -3,7 +3,7 @@
 //
 // Performance test reporting and formatting
 
-import Numerics
+import Real_Primitives
 
 #if canImport(Darwin)
     import Darwin
@@ -79,7 +79,7 @@ extension TestingPerformance {
     }
 
     private static func formatNumber(_ value: Double, decimals: Int) -> String {
-        let multiplier = Double.pow(10.0, Double(decimals))
+        let multiplier = Double.math.pow(10.0, Double(decimals))
         let rounded = (value * multiplier).rounded() / multiplier
 
         let integerPart = Int(rounded)

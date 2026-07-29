@@ -3,7 +3,7 @@
 //
 // Performance measurement primitives for Swift Testing
 
-import Numerics
+import Real_Primitives
 
 extension TestingPerformance {
     /// Statistical performance measurement containing multiple duration samples.
@@ -391,7 +391,7 @@ extension TestingPerformance {
         }
 
         private func formatNumber(_ value: Double, decimals: Int) -> String {
-            let multiplier = Double.pow(10.0, Double(decimals))
+            let multiplier = Double.math.pow(10.0, Double(decimals))
             let rounded = (value * multiplier).rounded() / multiplier
 
             let integerPart = Int(rounded)

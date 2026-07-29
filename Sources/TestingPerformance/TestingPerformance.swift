@@ -3,7 +3,7 @@
 //
 // Main namespace and core types
 
-import Numerics
+import Real_Primitives
 
 /// Namespace for performance testing utilities integrated with Swift Testing.
 ///
@@ -257,7 +257,7 @@ extension TestingPerformance {
         }
 
         private func formatNumber(_ value: Double, decimals: Int) -> String {
-            let multiplier = Double.pow(10.0, Double(decimals))
+            let multiplier = Double.math.pow(10.0, Double(decimals))
             let rounded = (value * multiplier).rounded() / multiplier
 
             let integerPart = Int(rounded)
