@@ -4,7 +4,7 @@
 // Basic performance measurement tests
 
 import Testing
-import TestingPerformance
+@testable import TestingPerformance
 
 extension PerformanceTests {
     @Suite(.serialized)
@@ -38,10 +38,31 @@ extension PerformanceTests {
             _ = numbers.reduce(0, +)
         }
 
-        @Test(.timed(iterations: 100, threshold: .microseconds(100)))
-        func `fast operation threshold`() {
-            let numbers = Array(1...100)
-            _ = numbers[50]
+        @Test
+        func `threshold records an exceeded controlled measurement`() {
+            let threshold = Duration.microseconds(100)
+            let actual = Duration.microseconds(101)
+            let config = TestingPerformance.Configuration(
+                threshold: threshold,
+                metric: .median
+            )
+            let measurement = TestingPerformance.Measurement(durations: [actual])
+
+            let error = _PerformanceTrait.performanceThresholdError(
+                name: "controlled operation",
+                config: config,
+                measurement: measurement
+            )
+
+            guard case let .thresholdExceeded(name, metric, expected, measured)? = error else {
+                Issue.record("Expected a threshold-exceeded error")
+                return
+            }
+
+            #expect(name == "controlled operation")
+            #expect(metric == .median)
+            #expect(expected == threshold)
+            #expect(measured == actual)
         }
 
         // MARK: - Different Metrics
