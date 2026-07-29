@@ -183,21 +183,33 @@
                 measurement: TestingPerformance.Measurement,
                 sourceLocation: SourceLocation
             ) {
-                guard let threshold = config.threshold else { return }
-                let metric = config.metric.extract(from: measurement)
-                guard metric <= threshold else {
-                    let error = TestingPerformance.Error.thresholdExceeded(
-                        test: name,
-                        metric: config.metric,
-                        expected: threshold,
-                        actual: metric
-                    )
-                    Issue.record(
-                        Comment(rawValue: error.description),
-                        sourceLocation: sourceLocation
-                    )
-                    return
-                }
+                guard let error = Self.performanceThresholdError(
+                    name: name,
+                    config: config,
+                    measurement: measurement
+                ) else { return }
+
+                Issue.record(
+                    Comment(rawValue: error.description),
+                    sourceLocation: sourceLocation
+                )
+            }
+
+            static func performanceThresholdError(
+                name: String,
+                config: TestingPerformance.Configuration,
+                measurement: TestingPerformance.Measurement
+            ) -> TestingPerformance.Error? {
+                guard let threshold = config.threshold else { return nil }
+                let actual = config.metric.extract(from: measurement)
+                guard actual > threshold else { return nil }
+
+                return .thresholdExceeded(
+                    test: name,
+                    metric: config.metric,
+                    expected: threshold,
+                    actual: actual
+                )
             }
 
             private func validateAllocationLimit(
