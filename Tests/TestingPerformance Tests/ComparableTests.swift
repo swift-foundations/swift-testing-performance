@@ -8,10 +8,10 @@ extension PerformanceTests {
     @Test("Measurement Comparable - equal measurements")
     func comparableEqual() {
         let m1 = TestingPerformance.Measurement(durations: [
-            .milliseconds(10), .milliseconds(20), .milliseconds(30),
+            .milliseconds(10), .milliseconds(20), .milliseconds(30)
         ])
         let m2 = TestingPerformance.Measurement(durations: [
-            .milliseconds(10), .milliseconds(20), .milliseconds(30),
+            .milliseconds(10), .milliseconds(20), .milliseconds(30)
         ])
 
         #expect(m1 == m2)
@@ -24,10 +24,10 @@ extension PerformanceTests {
     @Test("Measurement Comparable - less than")
     func comparableLessThan() {
         let faster = TestingPerformance.Measurement(durations: [
-            .milliseconds(5), .milliseconds(10), .milliseconds(15),
+            .milliseconds(5), .milliseconds(10), .milliseconds(15)
         ])
         let slower = TestingPerformance.Measurement(durations: [
-            .milliseconds(20), .milliseconds(30), .milliseconds(40),
+            .milliseconds(20), .milliseconds(30), .milliseconds(40)
         ])
 
         #expect(faster < slower)
@@ -38,10 +38,10 @@ extension PerformanceTests {
     @Test("Measurement Comparable - greater than")
     func comparableGreaterThan() {
         let faster = TestingPerformance.Measurement(durations: [
-            .milliseconds(5), .milliseconds(10), .milliseconds(15),
+            .milliseconds(5), .milliseconds(10), .milliseconds(15)
         ])
         let slower = TestingPerformance.Measurement(durations: [
-            .milliseconds(20), .milliseconds(30), .milliseconds(40),
+            .milliseconds(20), .milliseconds(30), .milliseconds(40)
         ])
 
         #expect(slower > faster)
@@ -53,7 +53,7 @@ extension PerformanceTests {
         let measurements = [
             TestingPerformance.Measurement(durations: [.milliseconds(30)]),
             TestingPerformance.Measurement(durations: [.milliseconds(10)]),
-            TestingPerformance.Measurement(durations: [.milliseconds(20)]),
+            TestingPerformance.Measurement(durations: [.milliseconds(20)])
         ]
 
         let sorted = measurements.sorted()
@@ -68,7 +68,7 @@ extension PerformanceTests {
         let measurements = [
             TestingPerformance.Measurement(durations: [.milliseconds(30)]),
             TestingPerformance.Measurement(durations: [.milliseconds(10)]),
-            TestingPerformance.Measurement(durations: [.milliseconds(20)]),
+            TestingPerformance.Measurement(durations: [.milliseconds(20)])
         ]
 
         let fastest = measurements.min()
@@ -82,10 +82,10 @@ extension PerformanceTests {
     func comparableUseMedian() {
         // Different distributions but same median
         let m1 = TestingPerformance.Measurement(durations: [
-            .milliseconds(5), .milliseconds(20), .milliseconds(100),
+            .milliseconds(5), .milliseconds(20), .milliseconds(100)
         ])
         let m2 = TestingPerformance.Measurement(durations: [
-            .milliseconds(10), .milliseconds(20), .milliseconds(50),
+            .milliseconds(10), .milliseconds(20), .milliseconds(50)
         ])
 
         #expect(m1 == m2)  // Both have median of 20ms

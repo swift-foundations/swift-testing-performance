@@ -18,7 +18,7 @@ extension PerformanceTests {
                     .milliseconds(10),
                     .milliseconds(15),
                     .milliseconds(20),
-                    .milliseconds(25),
+                    .milliseconds(25)
                 ]
             )
 
@@ -34,7 +34,7 @@ extension PerformanceTests {
                     .milliseconds(20),
                     .milliseconds(30),
                     .milliseconds(40),
-                    .milliseconds(50),
+                    .milliseconds(50)
                 ]
             )
 
@@ -48,7 +48,7 @@ extension PerformanceTests {
                 durations: [
                     .milliseconds(10),
                     .milliseconds(20),
-                    .milliseconds(30),
+                    .milliseconds(30)
                 ]
             )
 
@@ -79,7 +79,7 @@ extension PerformanceTests {
                 durations: [
                     .milliseconds(10),
                     .milliseconds(20),
-                    .milliseconds(30),
+                    .milliseconds(30)
                 ]
             )
 
@@ -99,7 +99,7 @@ extension PerformanceTests {
                 durations: [
                     .milliseconds(10),
                     .milliseconds(20),
-                    .milliseconds(30),
+                    .milliseconds(30)
                 ]
             )
 

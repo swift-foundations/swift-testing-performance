@@ -24,11 +24,11 @@ extension PerformanceTests {
         // Two measurements with similar distributions
         let m1 = TestingPerformance.Measurement(durations: [
             .milliseconds(9), .milliseconds(10), .milliseconds(11),
-            .milliseconds(10), .milliseconds(10), .milliseconds(10),
+            .milliseconds(10), .milliseconds(10), .milliseconds(10)
         ])
         let m2 = TestingPerformance.Measurement(durations: [
             .milliseconds(9), .milliseconds(10), .milliseconds(11),
-            .milliseconds(10), .milliseconds(10), .milliseconds(10),
+            .milliseconds(10), .milliseconds(10), .milliseconds(10)
         ])
 
         #expect(!m1.isSignificantlyDifferent(from: m2, confidenceLevel: 0.95))
@@ -132,12 +132,12 @@ extension PerformanceTests {
     func statisticsVarianceMatters() {
         // Low variance measurements
         let lowVariance = TestingPerformance.Measurement(durations: [
-            .milliseconds(99), .milliseconds(100), .milliseconds(101),
+            .milliseconds(99), .milliseconds(100), .milliseconds(101)
         ])
 
         // High variance measurements with same mean
         let highVariance = TestingPerformance.Measurement(durations: [
-            .milliseconds(1), .milliseconds(100), .milliseconds(199),
+            .milliseconds(1), .milliseconds(100), .milliseconds(199)
         ])
 
         // Both have mean ~100ms, but different variances
