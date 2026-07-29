@@ -5,7 +5,7 @@
 
 import Foundation
 import Testing
-import TestingPerformance
+@testable import TestingPerformance
 
 @Suite("README Code Examples Verification", .serialized)
 struct ReadmeVerificationTests {
@@ -232,17 +232,41 @@ struct ReadmeVerificationTests {
 
     // MARK: - Metric Selection Example
 
-    @Test(
-        "P95 threshold example from README",
-        .timed(
-            threshold: .milliseconds(100),
+    @Test("P95 threshold example from README")
+    func p95Threshold() {
+        let threshold = Duration.milliseconds(100)
+        let actual = Duration.milliseconds(101)
+        let trait: _PerformanceTrait = .timed(
+            threshold: threshold,
             metric: .p95
         )
-    )
-    func p95Threshold() {
-        // Example from "Performance Metrics" section
-        let numbers = Array(1...100_000)
-        _ = numbers.reduce(0, +)
+        let measurement = TestingPerformance.Measurement(
+            durations: Array(repeating: .milliseconds(10), count: 19) + [actual]
+        )
+
+        let error = _PerformanceTrait.performanceThresholdError(
+            name: "p95 threshold",
+            config: trait.configuration,
+            measurement: measurement
+        )
+
+        guard
+            case .thresholdExceeded(
+                let name,
+                let metric,
+                let expected,
+                let measured
+            )? = error
+        else {
+            Issue.record("Expected a p95 threshold-exceeded error")
+            return
+        }
+
+        #expect(measurement.median == .milliseconds(10))
+        #expect(name == "p95 threshold")
+        #expect(metric == .p95)
+        #expect(expected == threshold)
+        #expect(measured == actual)
     }
 
     // MARK: - Measurement Type Tests
