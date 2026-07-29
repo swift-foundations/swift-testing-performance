@@ -12,7 +12,7 @@ extension PerformanceTests {
             .milliseconds(20),
             .milliseconds(30),
             .milliseconds(40),
-            .milliseconds(50),
+            .milliseconds(50)
         ])
 
         #expect(measurement.p50 == measurement.median)
@@ -24,7 +24,7 @@ extension PerformanceTests {
             .milliseconds(10),
             .milliseconds(20),
             .milliseconds(30),
-            .milliseconds(40),
+            .milliseconds(40)
         ])
 
         // 75th percentile: Int(4 * 0.75) = 3, but clamped to index 2 (30ms)

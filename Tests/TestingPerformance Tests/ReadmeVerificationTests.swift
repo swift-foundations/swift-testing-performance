@@ -280,7 +280,7 @@ struct ReadmeVerificationTests {
                 .milliseconds(12),
                 .milliseconds(11),
                 .milliseconds(13),
-                .milliseconds(10),
+                .milliseconds(10)
             ]
         )
 
@@ -312,7 +312,7 @@ struct ReadmeVerificationTests {
                 .milliseconds(11),
                 .milliseconds(12),
                 .milliseconds(13),
-                .milliseconds(14),
+                .milliseconds(14)
             ]
         )
 

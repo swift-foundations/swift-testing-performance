@@ -11,7 +11,7 @@ extension PerformanceTests {
         let original = TestingPerformance.Measurement(durations: [
             .milliseconds(10),
             .milliseconds(20),
-            .milliseconds(30),
+            .milliseconds(30)
         ])
 
         let encoder = JSONEncoder()
@@ -76,7 +76,7 @@ extension PerformanceTests {
             .nanoseconds(123),
             .microseconds(456),
             .milliseconds(789),
-            .seconds(1),
+            .seconds(1)
         ])
 
         let encoder = JSONEncoder()
@@ -97,7 +97,7 @@ extension PerformanceTests {
     func codablePrettyPrint() throws {
         let measurement = TestingPerformance.Measurement(durations: [
             .milliseconds(10),
-            .milliseconds(20),
+            .milliseconds(20)
         ])
 
         let encoder = JSONEncoder()
@@ -115,7 +115,7 @@ extension PerformanceTests {
         let measurements = [
             TestingPerformance.Measurement(durations: [.milliseconds(10)]),
             TestingPerformance.Measurement(durations: [.milliseconds(20)]),
-            TestingPerformance.Measurement(durations: [.milliseconds(30)]),
+            TestingPerformance.Measurement(durations: [.milliseconds(30)])
         ]
 
         let encoder = JSONEncoder()
@@ -134,7 +134,7 @@ extension PerformanceTests {
     func codableDictionary() throws {
         let measurements: [String: TestingPerformance.Measurement] = [
             "fast": TestingPerformance.Measurement(durations: [.milliseconds(10)]),
-            "slow": TestingPerformance.Measurement(durations: [.milliseconds(100)]),
+            "slow": TestingPerformance.Measurement(durations: [.milliseconds(100)])
         ]
 
         let encoder = JSONEncoder()

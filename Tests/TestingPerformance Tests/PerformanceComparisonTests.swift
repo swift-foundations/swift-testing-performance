@@ -72,7 +72,7 @@ extension PerformanceTests {
 
             let comparisons = [
                 PerformanceComparison(name: "Operation A", current: current1, baseline: baseline1),
-                PerformanceComparison(name: "Operation B", current: current2, baseline: baseline2),
+                PerformanceComparison(name: "Operation B", current: current2, baseline: baseline2)
             ]
 
             // Print report (for manual inspection)
