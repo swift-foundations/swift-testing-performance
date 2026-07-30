@@ -29,7 +29,7 @@ The package enables performance regression detection in CI pipelines through tra
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/coenttb/swift-testing-performance", from: "1.0.0")
+    .package(url: "https://github.com/coenttb/swift-testing-performance", from: "0.3.1")
 ]
 ```
 
