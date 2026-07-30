@@ -7,9 +7,9 @@ Performance testing infrastructure for Swift Testing framework with statistical 
 
 ## Overview
 
-swift-testing-performance provides declarative performance testing using Swift Testing's trait system. It integrates statistical metrics, automatic threshold enforcement, and memory allocation tracking into Swift Testing's workflow without external dependencies.
+swift-testing-performance provides declarative performance testing using Swift Testing's trait system. It integrates statistical metrics, automatic threshold enforcement, and memory allocation tracking into Swift Testing's workflow.
 
-The package enables performance regression detection in CI pipelines through trait-based API, comprehensive statistical analysis, and zero-dependency implementation using only Swift standard library and platform math libraries (Darwin/Glibc).
+The package enables performance regression detection in CI pipelines through trait-based API, comprehensive statistical analysis, and memory allocation tracking using only the Swift standard library, platform math libraries (Darwin/Glibc), and `swift-primitives/swift-numeric-primitives` (product `Real Primitives`), which supplies the elementary power function used for decimal rounding.
 
 ## Features
 
