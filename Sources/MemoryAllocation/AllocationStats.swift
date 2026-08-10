@@ -10,7 +10,7 @@
 #endif
 
 #if os(Linux)
-    import CAllocationTracking
+    import Allocation_Tracking_Shims
 #endif
 
 /// Memory allocation statistics
