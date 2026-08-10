@@ -30,7 +30,7 @@ let package = Package(
         ),
         .target(
             name: "Allocation Tracking Shims",
-            path: "Sources/CAllocationTracking",
+            path: "Sources/Allocation Tracking Shims",
             linkerSettings: [
                 .linkedLibrary("dl", .when(platforms: [.linux]))
             ]
