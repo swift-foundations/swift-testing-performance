@@ -74,7 +74,7 @@ public final class LeakDetector: Sendable {
     public func assertNoLeaks(
         file: StaticString = #file,
         line: UInt = #line
-    ) throws {
+    ) throws(LeakError) {
         let net = netAllocations
         guard net == 0 else {
             throw LeakError.leaksDetected(
@@ -88,7 +88,7 @@ public final class LeakDetector: Sendable {
 }
 
 /// Leak detection error
-public enum LeakError: Error, CustomStringConvertible {
+public enum LeakError: Swift.Error, CustomStringConvertible {
     /// Memory leaks were detected
     case leaksDetected(allocations: Int, bytes: Int, file: StaticString, line: UInt)
 

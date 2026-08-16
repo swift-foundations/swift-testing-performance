@@ -251,6 +251,7 @@ extension TestingPerformance.Measurement {
 
 // MARK: - Measurement API
 
+// swift-format-ignore: AmbiguousTrailingClosureOverload
 extension TestingPerformance {
     /// Measure performance of an operation
     ///
@@ -379,12 +380,16 @@ extension TestingPerformance {
                 } else {
                     return formatNumber(seconds, decimals: 2) + "s"
                 }
+
             case .nanoseconds:
                 return formatNumber(duration.inNanoseconds, decimals: 2) + "ns"
+
             case .microseconds:
                 return formatNumber(duration.inMicroseconds, decimals: 2) + "µs"
+
             case .milliseconds:
                 return formatNumber(duration.inMilliseconds, decimals: 2) + "ms"
+
             case .seconds:
                 return formatNumber(duration.inSeconds, decimals: 2) + "s"
             }

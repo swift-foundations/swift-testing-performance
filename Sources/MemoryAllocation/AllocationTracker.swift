@@ -3,6 +3,7 @@
 //
 // Convenient API for tracking allocations in code blocks
 
+// swift-format-ignore: AmbiguousTrailingClosureOverload
 /// Allocation tracker for measuring memory allocations
 ///
 /// Provides convenient methods for tracking allocations around code blocks.

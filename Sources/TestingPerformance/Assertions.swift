@@ -19,7 +19,7 @@ extension TestingPerformance {
         iterations: Int = 10,
         metric: TestingPerformance.Metric = .median,
         operation: () -> T
-    ) throws -> (result: T, measurement: TestingPerformance.Measurement) {
+    ) throws(TestingPerformance.Error) -> (result: T, measurement: TestingPerformance.Measurement) {
         let (result, measurement) = measure(
             warmup: warmup,
             iterations: iterations,
@@ -112,7 +112,7 @@ extension TestingPerformance {
         baseline: TestingPerformance.Measurement,
         tolerance: Double = 0.10,
         metric: TestingPerformance.Metric = .median
-    ) throws {
+    ) throws(TestingPerformance.Error) {
         let currentValue = metric.extract(from: current)
         let baselineValue = metric.extract(from: baseline)
 
