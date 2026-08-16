@@ -5,6 +5,7 @@
 
 import Synchronization
 
+// swift-format-ignore: AmbiguousTrailingClosureOverload
 /// Allocation profiler
 ///
 /// Profiles memory allocations over multiple runs to generate statistics

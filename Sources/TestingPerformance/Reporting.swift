@@ -39,7 +39,7 @@ extension TestingPerformance {
                StdDev:     \(formatDuration(measurement.standardDeviation))
             """
 
-        if let allocations = allocations, !allocations.isEmpty {
+        if let allocations, !allocations.isEmpty {
             let minAlloc = allocations.min() ?? 0
             let maxAlloc = allocations.max() ?? 0
             let avgAlloc = allocations.reduce(0, +) / allocations.count

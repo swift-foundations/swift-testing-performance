@@ -63,12 +63,16 @@
                 }
             }
 
+            // swift-testing hands the trait an untyped `throws` closure, so
+            // neither the parameter nor this signature can be narrowed.
+            // swiftlint:disable typed_throws_required
             private func measureTest(
                 name: String,
                 config: TestingPerformance.Configuration.Resolved,
                 sourceLocation: SourceLocation,
                 performing function: @Sendable () async throws -> Void
             ) async throws {
+                // swiftlint:enable typed_throws_required
                 guard config.enabled else {
                     try await function()
                     return
@@ -267,7 +271,7 @@
                 detector: MemoryAllocation.LeakDetector?,
                 sourceLocation: SourceLocation
             ) {
-                guard let detector = detector else { return }
+                guard let detector else { return }
                 if detector.hasLeaks() {
                     let error = TestingPerformance.Error.memoryLeakDetected(
                         test: name,
@@ -287,7 +291,7 @@
                 tracker: MemoryAllocation.PeakMemoryTracker?,
                 sourceLocation: SourceLocation
             ) {
-                guard let limit = config.peakMemoryLimit, let tracker = tracker else { return }
+                guard let limit = config.peakMemoryLimit, let tracker else { return }
                 guard tracker.peakBytes <= limit else {
                     let error = TestingPerformance.Error.peakMemoryExceeded(
                         test: name,
@@ -303,9 +307,13 @@
             }
 
             // Helper to measure both duration and allocations using AllocationTracker
+            // The measured closure's `throws` is untyped at the swift-testing
+            // boundary, so this helper propagates it as-is.
+            // swiftlint:disable typed_throws_required
             private func measureWithAllocations(
                 _ function: @Sendable () async throws -> Void
             ) async throws -> MeasurementResult {
+                // swiftlint:enable typed_throws_required
                 let start = ContinuousClock.now
                 let (_, stats) = try await MemoryAllocation.AllocationTracker.measure {
                     try await function()
