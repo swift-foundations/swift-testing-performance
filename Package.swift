@@ -24,13 +24,13 @@ let package = Package(
         .target(
             name: "MemoryAllocation",
             dependencies: [
-                .target(name: "CAllocationTracking", condition: .when(platforms: [.linux]))
+                .target(name: "Allocation Tracking Shims", condition: .when(platforms: [.linux]))
             ],
             path: "Sources/MemoryAllocation"
         ),
         .target(
-            name: "CAllocationTracking",
-            path: "Sources/CAllocationTracking",
+            name: "Allocation Tracking Shims",
+            path: "Sources/Allocation Tracking Shims",
             linkerSettings: [
                 .linkedLibrary("dl", .when(platforms: [.linux]))
             ]
